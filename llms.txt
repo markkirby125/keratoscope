@@ -1,0 +1,39 @@
+# Keratoscope
+
+A browser-based astigmatism ghosting calibration wizard.
+
+- Live: https://markkirby125.github.io/keratoscope/
+- Repo: https://github.com/markkirby125/keratoscope
+- License: MIT
+
+## What it is
+
+A single-page, client-only tool that helps people who see ghosted or doubled text generate a personal CSS userstyle. The wizard anchors the adjustment to real text, then exports a deterministic, script-free CSS block for Stylus or another userstyle manager.
+
+## What it is not
+
+- Not a medical device.
+- Not a diagnosis or vision correction.
+- Not a guarantee of reduced ghosting.
+
+The copy promise everywhere is: "a presentation tweak that may reduce perceived doubling for some users — no guarantee."
+
+## Safety prompt
+
+The first screen asks: "New or sudden double vision? See an eye professional today." The user must acknowledge before continuing.
+
+## Tech stack
+
+- Vanilla JavaScript (ES modules)
+- Single `index.html` for the wizard, preview, and export
+- `profile.js` for profile model and deterministic CSS generation
+- Node built-in test runner for CSS snapshot tests
+- GitHub Pages for deployment
+
+## Local usage
+
+```bash
+git clone https://github.com/markkirby125/keratoscope.git
+cd keratoscope
+npm test
+```

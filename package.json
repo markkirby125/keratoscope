@@ -1,0 +1,25 @@
+{
+  "name": "keratoscope",
+  "version": "1.0.0",
+  "description": "Astigmatism ghosting calibration wizard — generates a personal CSS userstyle that may reduce perceived text doubling for some users. Comfort aid, not a medical device.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  },
+  "keywords": [
+    "astigmatism",
+    "keratoconus",
+    "ghosting",
+    "double-vision",
+    "accessibility",
+    "userstyle",
+    "low-vision"
+  ],
+  "author": "Paul Kirby",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/markkirby125/keratoscope.git"
+  },
+  "homepage": "https://markkirby125.github.io/keratoscope/"
+}

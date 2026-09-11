@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Keratoscope is a free browser comfort aid that generates a personal userstyle which may reduce perceived text ghosting for some users. Not a medical device.">
+  <title>Keratoscope</title>
+  <style>
+    :root {
+      --bg: #fafafa;
+      --text: #1a1a1a;
+      --muted: #555;
+      --accent: #005fcc;
+      --accent-text: #ffffff;
+      --border: #ccc;
+      --focus: #005fcc;
+      --danger: #b00020;
+      --radius: 0.5rem;
+      --step-max: 34rem;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 100%;
+    }
+
+    body {
+      margin: 0;
+      padding: 1rem;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    main {
+      max-width: var(--step-max);
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      margin: 0 0 0.5rem;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 0 0 1.5rem;
+    }
+
+    .safety {
+      border-left: 0.25rem solid var(--danger);
+      padding: 1rem;
+      background: #fff0f3;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin-bottom: 1.5rem;
+    }
+
+    .safety h2 {
+      font-size: 1.1rem;
+      margin: 0 0 0.5rem;
+      color: var(--danger);
+    }
+
+    .safety p {
+      margin: 0 0 1rem;
+    }
+
+    button {
+      font: inherit;
+      padding: 0.75rem 1.25rem;
+      border: 0.125rem solid var(--accent);
+      border-radius: var(--radius);
+      background: var(--accent);
+      color: var(--accent-text);
+      cursor: pointer;
+      min-height: 2.75rem;
+      min-width: 2.75rem;
+    }
+
+    button:hover {
+      background: #004fa3;
+      border-color: #004fa3;
+    }
+
+    button:focus-visible {
+      outline: 0.1875rem solid var(--focus);
+      outline-offset: 0.125rem;
+    }
+
+    button.secondary {
+      background: transparent;
+      color: var(--accent);
+    }
+
+    button.secondary:hover {
+      background: #e6f0fa;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .step {
+      display: none;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    .step h2 {
+      font-size: 1.35rem;
+      margin-top: 0;
+    }
+
+    .anchor-text {
+      font-size: 1.5rem;
+      line-height: 1.4;
+      margin: 1.5rem 0;
+      padding: 1rem;
+      border: 0.0625rem solid var(--border);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .controls {
+      display: grid;
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+
+    label {
+      display: grid;
+      gap: 0.5rem;
+      font-weight: 500;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      min-height: 2.75rem;
+    }
+
+    .value {
+      font-weight: normal;
+      color: var(--muted);
+    }
+
+    .preview {
+      margin: 1.5rem 0;
+      padding: 1rem;
+      border: 0.0625rem solid var(--border);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .preview h3 {
+      font-size: 1rem;
+      margin: 0 0 0.75rem;
+    }
+
+    .preview p {
+      margin: 0;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .status {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border-radius: var(--radius);
+      background: #eef6ff;
+    }
+
+    .status:empty {
+      display: none;
+    }
+
+    .notice {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+
+    details {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border: 0.0625rem solid var(--border);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 8rem;
+      font-family: monospace;
+      font-size: 0.875rem;
+      margin-top: 0.75rem;
+      padding: 0.5rem;
+      border: 0.0625rem solid var(--border);
+      border-radius: var(--radius);
+      resize: vertical;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    #dark-notice {
+      border-left: 0.25rem solid var(--accent);
+      padding: 0.75rem 1rem;
+      background: #e6f0fa;
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Keratoscope</h1>
+    <p class="subtitle">A presentation tweak that may reduce perceived text doubling for some users — no guarantee.</p>
+
+    <div id="step-status" class="sr-only" role="status" aria-live="polite"></div>
+    <p id="dark-notice" class="notice hidden">Your system is set to dark mode. Keratoscope currently works best in light mode; a dark theme is planned.</p>
+
+    <section id="step-safety" class="step active" aria-labelledby="safety-heading">
+      <div class="safety">
+        <h2 tabindex="-1" id="safety-heading">Safety check</h2>
+        <p>New or sudden double vision can be a sign of a serious eye or neurological problem. <strong>If your double vision is new or sudden, see an eye professional today.</strong></p>
+        <p>Keratoscope is a comfort aid, not a medical device, and not a substitute for professional eye care.</p>
+        <button id="btn-safety" type="button">Got it — continue</button>
+      </div>
+    </section>
+
+    <section id="step-direction" class="step" aria-labelledby="direction-heading">
+      <h2 tabindex="-1" id="direction-heading">Step 1: Which way does the ghost sit?</h2>
+      <p>Look at the sentence below. If you see a pale copy next to each word, pick the direction the copy appears to sit.</p>
+      <div class="anchor-text" id="direction-sample" aria-hidden="true">The quick brown fox jumps over the lazy dog.</div>
+      <div class="controls">
+        <label for="direction">Ghost direction
+          <select id="direction">
+            <option value="right">To the right</option>
+            <option value="left">To the left</option>
+            <option value="down">Below</option>
+            <option value="up">Above</option>
+            <option value="down-right">Below and right</option>
+            <option value="down-left">Below and left</option>
+            <option value="up-right">Above and right</option>
+            <option value="up-left">Above and left</option>
+          </select>
+        </label>
+      </div>
+      <div class="actions">
+        <button id="btn-direction-next" type="button">Next</button>
+      </div>
+    </section>
+
+    <section id="step-magnitude" class="step" aria-labelledby="magnitude-heading">
+      <h2 tabindex="-1" id="magnitude-heading">Step 2: Line up the pale copy</h2>
+      <p>Line up the pale copy with the shadow you see on real words. Use the slider until the ghost sits on top of the dark text.</p>
+      <div class="anchor-text" id="magnitude-sample" aria-hidden="true">The quick brown fox jumps over the lazy dog.</div>
+      <div class="controls">
+        <label for="magnitude">Ghost distance <span class="value" id="magnitude-value">2 px</span>
+          <input id="magnitude" type="range" min="0" max="8" step="0.25" value="2">
+        </label>
+      </div>
+      <div class="actions">
+        <button id="btn-magnitude-back" type="button" class="secondary">Back</button>
+        <button id="btn-magnitude-next" type="button">Next</button>
+      </div>
+    </section>
+
+    <section id="step-opacity" class="step" aria-labelledby="opacity-heading">
+      <h2 tabindex="-1" id="opacity-heading">Step 3: Match the ghost strength</h2>
+      <p>Set the pale copy's opacity to match how faint or strong the ghost looks to you.</p>
+      <div class="anchor-text" id="opacity-sample" aria-hidden="true">The quick brown fox jumps over the lazy dog.</div>
+      <div class="controls">
+        <label for="opacity">Ghost opacity <span class="value" id="opacity-value">35%</span>
+          <input id="opacity" type="range" min="0" max="1" step="0.05" value="0.35">
+        </label>
+        <label for="blur">Ghost blur <span class="value" id="blur-value">0 px</span>
+          <input id="blur" type="range" min="0" max="4" step="0.25" value="0">
+        </label>
+      </div>
+      <div class="actions">
+        <button id="btn-opacity-back" type="button" class="secondary">Back</button>
+        <button id="btn-opacity-next" type="button">Next</button>
+      </div>
+    </section>
+
+    <section id="step-verify" class="step" aria-labelledby="verify-heading">
+      <h2 tabindex="-1" id="verify-heading">Step 4: Check a real paragraph</h2>
+      <p>Read the paragraph below with your settings applied. If the text looks steadier, continue to export. If not, go back and adjust.</p>
+      <div class="preview">
+        <h3>Preview</h3>
+        <p id="verify-sample">Reading on screens can be tiring when letters split into two images. This preview shows how your personal Keratoscope settings might look on ordinary page text. Move the slider if the ghost is still visible, then come back here.</p>
+      </div>
+      <div class="controls">
+        <label for="weight">Weight boost <span class="value" id="weight-value">0</span>
+          <input id="weight" type="range" min="-100" max="300" step="10" value="0">
+        </label>
+        <label for="spacing">Letter spacing <span class="value" id="spacing-value">0 em</span>
+          <input id="spacing" type="range" min="-0.05" max="0.15" step="0.005" value="0">
+        </label>
+      </div>
+      <div class="actions">
+        <button id="btn-verify-back" type="button" class="secondary">Back</button>
+        <button id="btn-verify-preview" type="button" class="secondary">Update preview</button>
+        <button id="btn-verify-next" type="button">Looks good — export</button>
+      </div>
+      <p id="export-gate" class="notice hidden">Update the preview at least once before exporting.</p>
+      <p class="notice">This is a presentation tweak, not a medical device. It may reduce perceived doubling for some users — no guarantee.</p>
+    </section>
+
+    <section id="step-export" class="step" aria-labelledby="export-heading">
+      <h2 tabindex="-1" id="export-heading">Step 5: Export your profile</h2>
+      <p>Copy the userstyle below and install it in Stylus or another user-CSS manager.</p>
+      <textarea id="export-output" readonly aria-label="Generated userstyle CSS"></textarea>
+      <div class="actions">
+        <button id="btn-export-copy" type="button">Copy to clipboard</button>
+        <button id="btn-export-back" type="button" class="secondary">Back</button>
+        <button id="btn-export-restart" type="button" class="secondary">Start over</button>
+      </div>
+      <div id="export-status" class="status" role="status"></div>
+
+      <details>
+        <summary>Advanced: bookmarklet and raw profile</summary>
+        <p>Use these only if you are comfortable with user scripts.</p>
+        <label for="bookmarklet-output">Bookmarklet</label>
+        <textarea id="bookmarklet-output" readonly aria-label="Bookmarklet injector"></textarea>
+        <label for="json-output">JSON profile</label>
+        <textarea id="json-output" readonly aria-label="JSON profile"></textarea>
+      </details>
+    </section>
+  </main>
+
+  <script type="module">
+    import {
+      normalizeProfile,
+      generateCSS,
+      generateUserstyle,
+      loadProfile,
+      saveProfile,
+      getDefaultProfile,
+    } from './profile.js';
+
+    const directionMap = {
+      right: { dx: 1, dy: 0 },
+      left: { dx: -1, dy: 0 },
+      down: { dx: 0, dy: 1 },
+      up: { dx: 0, dy: -1 },
+      'down-right': { dx: 1, dy: 1 },
+      'down-left': { dx: -1, dy: 1 },
+      'up-right': { dx: 1, dy: -1 },
+      'up-left': { dx: -1, dy: -1 },
+    };
+
+    const state = {
+      step: 'safety',
+      direction: 'right',
+      magnitude: 2,
+      opacity: 0.35,
+      blur: 0,
+      fontWeightDelta: 0,
+      letterSpacingDelta: 0,
+      previewShown: false,
+    };
+
+    const stepStatus = document.getElementById('step-status');
+    const exportStatus = document.getElementById('export-status');
+    const btnVerifyNext = document.getElementById('btn-verify-next');
+    const exportGate = document.getElementById('export-gate');
+
+    function setStep(name) {
+      document.querySelectorAll('.step').forEach((el) => el.classList.remove('active'));
+      const next = document.getElementById(`step-${name}`);
+      if (next) {
+        next.classList.add('active');
+        const heading = next.querySelector('h2');
+        if (heading) {
+          heading.focus();
+          announceStep(heading.textContent || `Step: ${name}`);
+        } else {
+          announceStep(`Step: ${name}`);
+        }
+        next.scrollIntoView({ behavior: 'auto', block: 'start' });
+      }
+      state.step = name;
+      updateExportGate();
+    }
+
+    function announceStep(message) {
+      if (stepStatus) stepStatus.textContent = message;
+    }
+
+    function showExportStatus(message) {
+      if (exportStatus) exportStatus.textContent = message;
+    }
+
+    function updateExportGate() {
+      if (state.step !== 'verify' || !btnVerifyNext) return;
+      if (state.previewShown) {
+        btnVerifyNext.disabled = false;
+        btnVerifyNext.removeAttribute('aria-describedby');
+        if (exportGate) exportGate.classList.add('hidden');
+      } else {
+        btnVerifyNext.disabled = true;
+        btnVerifyNext.setAttribute('aria-describedby', 'export-gate');
+        if (exportGate) exportGate.classList.remove('hidden');
+      }
+    }
+
+    function getProfile() {
+      const dir = directionMap[state.direction] || directionMap.right;
+      return normalizeProfile({
+        dx: dir.dx * state.magnitude,
+        dy: dir.dy * state.magnitude,
+        opacity: state.opacity,
+        blur: state.blur,
+        fontWeightDelta: state.fontWeightDelta,
+        letterSpacingDelta: state.letterSpacingDelta,
+      });
+    }
+
+    function applyPreview(element, profile) {
+      const css = generateCSS(profile);
+      const existing = element.querySelector('style[data-keratoscope]');
+      if (existing) existing.remove();
+      const style = document.createElement('style');
+      style.setAttribute('data-keratoscope', '');
+      style.textContent = css;
+      element.appendChild(style);
+    }
+
+    function applySample(sampleId, profile) {
+      const el = document.getElementById(sampleId);
+      if (el) applyPreview(el, profile);
+    }
+
+    function updateSamples() {
+      const profile = getProfile();
+      applySample('magnitude-sample', profile);
+      applySample('opacity-sample', profile);
+      applySample('verify-sample', profile);
+    }
+
+    function updateValue(id, value, suffix = '') {
+      const el = document.getElementById(`${id}-value`);
+      if (el) el.textContent = `${value}${suffix}`;
+    }
+
+    function updateExport() {
+      const profile = getProfile();
+      const userstyle = generateUserstyle(profile);
+      const output = document.getElementById('export-output');
+      if (output) output.value = userstyle;
+
+      const bookmarklet = `javascript:(function(){var css=${JSON.stringify(generateCSS(profile))};var s=document.createElement('style');s.textContent=css;document.head.appendChild(s);})();`;
+      const bookmarkletOutput = document.getElementById('bookmarklet-output');
+      if (bookmarkletOutput) bookmarkletOutput.value = bookmarklet;
+
+      const jsonOutput = document.getElementById('json-output');
+      if (jsonOutput) jsonOutput.value = JSON.stringify(profile, null, 2);
+    }
+
+    document.getElementById('btn-safety').addEventListener('click', () => {
+      setStep('direction');
+    });
+
+    document.getElementById('btn-direction-next').addEventListener('click', () => {
+      state.direction = document.getElementById('direction').value;
+      setStep('magnitude');
+      updateSamples();
+    });
+
+    document.getElementById('btn-magnitude-back').addEventListener('click', () => setStep('direction'));
+    document.getElementById('btn-magnitude-next').addEventListener('click', () => setStep('opacity'));
+
+    document.getElementById('btn-opacity-back').addEventListener('click', () => setStep('magnitude'));
+    document.getElementById('btn-opacity-next').addEventListener('click', () => {
+      state.previewShown = false;
+      setStep('verify');
+      updateSamples();
+    });
+
+    document.getElementById('btn-verify-back').addEventListener('click', () => setStep('opacity'));
+    document.getElementById('btn-verify-preview').addEventListener('click', () => {
+      state.previewShown = true;
+      updateSamples();
+      updateExportGate();
+    });
+    document.getElementById('btn-verify-next').addEventListener('click', () => {
+      state.previewShown = true;
+      saveProfile(getProfile());
+      updateExport();
+      setStep('export');
+    });
+
+    document.getElementById('btn-export-back').addEventListener('click', () => setStep('verify'));
+    document.getElementById('btn-export-restart').addEventListener('click', () => {
+      Object.assign(state, {
+        direction: 'right',
+        magnitude: 2,
+        opacity: 0.35,
+        blur: 0,
+        fontWeightDelta: 0,
+        letterSpacingDelta: 0,
+        previewShown: false,
+      });
+      document.getElementById('direction').value = 'right';
+      document.getElementById('magnitude').value = 2;
+      document.getElementById('opacity').value = 0.35;
+      document.getElementById('blur').value = 0;
+      document.getElementById('weight').value = 0;
+      document.getElementById('spacing').value = 0;
+      updateValue('magnitude', 2, ' px');
+      updateValue('opacity', '35', '%');
+      updateValue('blur', 0, ' px');
+      updateValue('weight', 0);
+      updateValue('spacing', 0, ' em');
+      setStep('direction');
+    });
+
+    document.getElementById('btn-export-copy').addEventListener('click', async () => {
+      const output = document.getElementById('export-output');
+      try {
+        await navigator.clipboard.writeText(output.value);
+        showExportStatus('Copied to clipboard.');
+        announceStep('CSS copied to clipboard.');
+      } catch {
+        output.select();
+        showExportStatus('Could not copy automatically. The text is selected; press Ctrl+C or Cmd+C.');
+        announceStep('Could not copy automatically. The text is selected; press Ctrl+C or Cmd+C.');
+      }
+    });
+
+    document.getElementById('magnitude').addEventListener('input', (e) => {
+      state.magnitude = Number(e.target.value);
+      updateValue('magnitude', state.magnitude, ' px');
+      updateSamples();
+    });
+
+    document.getElementById('opacity').addEventListener('input', (e) => {
+      state.opacity = Number(e.target.value);
+      updateValue('opacity', Math.round(state.opacity * 100), '%');
+      updateSamples();
+    });
+
+    document.getElementById('blur').addEventListener('input', (e) => {
+      state.blur = Number(e.target.value);
+      updateValue('blur', state.blur, ' px');
+      updateSamples();
+    });
+
+    document.getElementById('weight').addEventListener('input', (e) => {
+      state.fontWeightDelta = Number(e.target.value);
+      updateValue('weight', state.fontWeightDelta);
+      state.previewShown = true;
+      updateSamples();
+      updateExportGate();
+    });
+
+    document.getElementById('spacing').addEventListener('input', (e) => {
+      state.letterSpacingDelta = Number(e.target.value);
+      updateValue('spacing', state.letterSpacingDelta, ' em');
+      state.previewShown = true;
+      updateSamples();
+      updateExportGate();
+    });
+
+    document.getElementById('direction').addEventListener('change', (e) => {
+      state.direction = e.target.value;
+      updateSamples();
+    });
+
+    // Show a notice when the system prefers dark mode, since the tool is currently light-only.
+    function initDarkModeNotice() {
+      const darkNotice = document.getElementById('dark-notice');
+      if (!darkNotice) return;
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+      const sync = () => darkNotice.classList.toggle('hidden', !mq.matches);
+      sync();
+      if (mq.addEventListener) mq.addEventListener('change', sync);
+    }
+    initDarkModeNotice();
+
+    // Initialize from stored profile if present.
+    const stored = loadProfile();
+    if (stored.dx !== 0 || stored.dy !== 0 || stored.opacity !== getDefaultProfile().opacity) {
+      // Heuristic: restore magnitude and direction from stored dx/dy.
+      const mag = Math.sqrt(stored.dx ** 2 + stored.dy ** 2);
+      if (mag > 0) {
+        state.magnitude = mag;
+        const dirKey = Object.keys(directionMap).find((k) => {
+          const d = directionMap[k];
+          return d.dx === Math.sign(stored.dx) && d.dy === Math.sign(stored.dy);
+        });
+        if (dirKey) state.direction = dirKey;
+      }
+      state.opacity = stored.opacity;
+      state.blur = stored.blur;
+      state.fontWeightDelta = stored.fontWeightDelta;
+      state.letterSpacingDelta = stored.letterSpacingDelta;
+
+      document.getElementById('magnitude').value = state.magnitude;
+      document.getElementById('opacity').value = state.opacity;
+      document.getElementById('blur').value = state.blur;
+      document.getElementById('weight').value = state.fontWeightDelta;
+      document.getElementById('spacing').value = state.letterSpacingDelta;
+      document.getElementById('direction').value = state.direction;
+      updateValue('magnitude', state.magnitude, ' px');
+      updateValue('opacity', Math.round(state.opacity * 100), '%');
+      updateValue('blur', state.blur, ' px');
+      updateValue('weight', state.fontWeightDelta);
+      updateValue('spacing', state.letterSpacingDelta, ' em');
+    }
+  </script>
+</body>
+</html>
